@@ -1,0 +1,14 @@
+<suite name="IoCSuite">
+
+    <test name="XMLBeanReader">
+        <classes>
+            <class name="com.miskevich.ioc.util.reader.XMLBeanReaderTest">
+                <methods>
+                    <include name="testGetBeanDefinitionsByPath"/>
+                    <include name="testGetBeanDefinitionsByPaths"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
