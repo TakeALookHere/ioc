@@ -5,18 +5,20 @@ import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
 
-
 class XMLBeanReaderTest extends GroovyTestCase {
-    XMLBeanReader xmlBeanReader = new XMLBeanReader()
 
     @Test(dataProvider = "provideBeanDefinitions", dataProviderClass = BeanDefinitionDataProvider.class)
     void testGetBeanDefinitionsByPath(expectedBeanDefinitions) {
+        XMLBeanReader xmlBeanReader = new XMLBeanReader()
         def actualBeanDefinitions = xmlBeanReader.getBeanDefinitions("src/test/resources/context.xml")
         assertEquals(actualBeanDefinitions, expectedBeanDefinitions)
     }
 
 
-    void testGetBeanDefinitionsByPaths() {
-
+    @Test(dataProvider = "provideBeanDefinitionsPaths", dataProviderClass = BeanDefinitionDataProvider.class)
+    void testGetBeanDefinitionsByPaths(expectedBeanDefinitions) {
+        XMLBeanReader xmlBeanReader = new XMLBeanReader()
+        def actualBeanDefinitions = xmlBeanReader.getBeanDefinitions("src/test/resources/context.xml", "src/test/resources/email-context.xml")
+        assertEquals(actualBeanDefinitions, expectedBeanDefinitions)
     }
 }

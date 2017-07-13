@@ -1,6 +1,6 @@
 <beans>
     <bean id="emailService" class="com.miskevich.ioc.testdata.EmailService">
-        <property name="protocol" value="POP3"/>
-        <property name="port" value="3000"/>
+        <property name="protocol" value="UDP"/>
+        <property name="port" value="8888"/>
     </bean>
 </beans>

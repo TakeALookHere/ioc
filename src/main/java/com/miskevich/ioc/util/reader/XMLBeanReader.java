@@ -26,20 +26,15 @@ public class XMLBeanReader extends DefaultHandler implements BeanReader {
     }
 
     public List<BeanDefinition> getBeanDefinitions(String path) {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        try {
-            InputStream file = new FileInputStream("src/test/resources/context.xml");
-            SAXParser saxParser = factory.newSAXParser();
-            saxParser.parse(file, this);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        parseBeanDefinitions(path);
         return beanDefinitions;
     }
 
     public List<BeanDefinition> getBeanDefinitions(String[] paths) {
-        return null;
+        for (String path : paths) {
+            parseBeanDefinitions(path);
+        }
+        return beanDefinitions;
     }
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -69,6 +64,17 @@ public class XMLBeanReader extends DefaultHandler implements BeanReader {
         if (qName.equalsIgnoreCase("bean")) {
             beanDefinitions.get(beanDefinitions.size() - 1).setBeanProperties(beanProperties);
             beanProperties = new ArrayList<>();
+        }
+    }
+
+    private void parseBeanDefinitions(String path) {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            InputStream file = new FileInputStream(path);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.parse(file, this);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
