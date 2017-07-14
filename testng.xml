@@ -2,12 +2,13 @@
 
     <test name="XMLBeanReader">
         <classes>
-            <class name="com.miskevich.ioc.util.reader.XMLBeanReaderTest">
-                <methods>
-                    <include name="testGetBeanDefinitionsByPath"/>
-                    <include name="testGetBeanDefinitionsByPaths"/>
-                </methods>
-            </class>
+            <class name="com.miskevich.ioc.util.reader.XMLBeanReaderTest"/>
+        </classes>
+    </test>
+
+    <test name="ClassPathApplicationContext">
+        <classes>
+            <class name="com.miskevich.ioc.util.ClassPathApplicationContextTest"/>
         </classes>
     </test>
 

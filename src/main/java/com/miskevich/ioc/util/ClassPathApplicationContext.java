@@ -3,6 +3,7 @@ package com.miskevich.ioc.util;
 import com.miskevich.ioc.data.Bean;
 import com.miskevich.ioc.data.BeanDefinition;
 import com.miskevich.ioc.data.BeanProperty;
+import com.miskevich.ioc.testdata.UserService;
 import com.miskevich.ioc.util.reader.BeanReader;
 import com.miskevich.ioc.util.reader.XMLBeanReader;
 
@@ -26,6 +27,11 @@ public class ClassPathApplicationContext implements ApplicationContext {
     }
 
     public ClassPathApplicationContext(String[] paths) {
+        beans = new ArrayList<>();
+        setBeanReader(new XMLBeanReader());
+        beanDefinitions = reader.getBeanDefinitions(paths);
+        initializeBeanObjects();
+        injectBeanProperties();
     }
 
     public Object getBean(String id) {
@@ -37,16 +43,32 @@ public class ClassPathApplicationContext implements ApplicationContext {
         throw new BeanInstantiationException("No such bean was registered with id: " + id);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getBean(Class<T> clazz) {
-        return null;
+        for(Bean bean : beans){
+            if(clazz.isInstance(bean.getValue())){
+                return (T) bean.getValue();
+            }
+        }
+        throw new BeanInstantiationException("No such bean was registered for class: " + clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getBean(String id, Class<T> clazz) {
-        return null;
+        for (Bean bean : beans){
+            if(bean.getId().equals(id) && clazz.isInstance(bean.getValue())){
+                return (T) bean.getValue();
+            }
+        }
+        throw new BeanInstantiationException("No such bean was registered for class: " + clazz + " with id: " + id);
     }
 
     public List<String> getBeanNames() {
-        return null;
+        List<String> beanNames = new ArrayList<>();
+        for (Bean bean : beans){
+            beanNames.add(bean.getId());
+        }
+        return beanNames;
     }
 
     private void setBeanReader(BeanReader reader) {
@@ -71,9 +93,6 @@ public class ClassPathApplicationContext implements ApplicationContext {
                 Class clazz = Class.forName(beanDefinition.getClassName());
                 Method[] declaredMethods = clazz.getDeclaredMethods();
                 Bean beanById = getBeanById(beanDefinition);
-                if (null == beanById.getId()) {
-                    throw new BeanInstantiationException("No such bean was registered: " + beanDefinition.getId());
-                }
 
                 List<BeanProperty> beanProperties = beanDefinition.getBeanProperties();
                 for (BeanProperty beanProperty : beanProperties) {
@@ -106,9 +125,6 @@ public class ClassPathApplicationContext implements ApplicationContext {
                                 break;
                             } else {
                                 Bean beanByRef = getBeanByRef(beanProperty);
-                                if (null == beanByRef.getId()) {
-                                    throw new BeanInstantiationException("No such bean was registered: " + beanProperty.getRef());
-                                }
                                 method.invoke(beanById.getValue(), beanByRef.getValue());
                             }
                         }
@@ -132,23 +148,21 @@ public class ClassPathApplicationContext implements ApplicationContext {
     }
 
     private Bean getBeanById(BeanDefinition beanDefinition) {
-        Bean emptyBean = new Bean();
         for (Bean bean : beans) {
             if (bean.getId().equals(beanDefinition.getId())) {
                 return bean;
             }
         }
-        return emptyBean;
+        throw new BeanInstantiationException("No such bean was registered: " + beanDefinition.getId());
     }
 
     private Bean getBeanByRef(BeanProperty beanProperty) {
-        Bean emptyBean = new Bean();
         for (Bean bean : beans) {
             if (bean.getId().equals(beanProperty.getRef())) {
                 return bean;
             }
         }
-        return emptyBean;
+        throw new BeanInstantiationException("No such bean was registered with ref: " + beanProperty.getRef());
     }
 
     private void createBeansFromBeanDefinitions(Object instance, BeanDefinition beanDefinition) {

@@ -77,4 +77,14 @@ class BeanDefinitionDataProvider {
         array[0] = [beanDefinitions] as Object[]
         return array
     }
+
+    @DataProvider(name = "provideBeanNames")
+    static Object[][] provideBeanNames() {
+        def beanNames = ['emailService', 'userService', 'paymentWithMaxAmountService', 'paymentService']
+
+        def array = new Object[1][]
+        array[0] = [beanNames] as Object[]
+        return array
+    }
+
 }
