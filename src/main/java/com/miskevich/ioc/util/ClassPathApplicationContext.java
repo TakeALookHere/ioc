@@ -3,7 +3,6 @@ package com.miskevich.ioc.util;
 import com.miskevich.ioc.data.Bean;
 import com.miskevich.ioc.data.BeanDefinition;
 import com.miskevich.ioc.data.BeanProperty;
-import com.miskevich.ioc.testdata.UserService;
 import com.miskevich.ioc.util.reader.BeanReader;
 import com.miskevich.ioc.util.reader.XMLBeanReader;
 
@@ -45,8 +44,8 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     @SuppressWarnings("unchecked")
     public <T> T getBean(Class<T> clazz) {
-        for(Bean bean : beans){
-            if(clazz.isInstance(bean.getValue())){
+        for (Bean bean : beans) {
+            if (clazz.isInstance(bean.getValue())) {
                 return (T) bean.getValue();
             }
         }
@@ -55,8 +54,8 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     @SuppressWarnings("unchecked")
     public <T> T getBean(String id, Class<T> clazz) {
-        for (Bean bean : beans){
-            if(bean.getId().equals(id) && clazz.isInstance(bean.getValue())){
+        for (Bean bean : beans) {
+            if (bean.getId().equals(id) && clazz.isInstance(bean.getValue())) {
                 return (T) bean.getValue();
             }
         }
@@ -65,7 +64,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     public List<String> getBeanNames() {
         List<String> beanNames = new ArrayList<>();
-        for (Bean bean : beans){
+        for (Bean bean : beans) {
             beanNames.add(bean.getId());
         }
         return beanNames;
