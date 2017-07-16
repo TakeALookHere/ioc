@@ -16,6 +16,10 @@ public class PaymentService {
         this.maxAmount = maxAmount;
     }
 
+    public EmailService getEmailService() {
+        return emailService;
+    }
+
     public void pay(String from, String to, double amount) {
         emailService.sendEmail("from", "payment successful");
         emailService.sendEmail("to", "payment successful");

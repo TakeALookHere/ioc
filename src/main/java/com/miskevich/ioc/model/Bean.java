@@ -1,4 +1,4 @@
-package com.miskevich.ioc.data;
+package com.miskevich.ioc.model;
 
 public class Bean {
     private String id;

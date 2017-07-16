@@ -1,11 +1,16 @@
-package com.miskevich.ioc.util
+package com.miskevich.ioc.context
 
+import com.miskevich.ioc.exception.BeanInstantiationException
+import com.miskevich.ioc.exception.BeanNotFoundException
 import com.miskevich.ioc.testdata.PaymentService
 import com.miskevich.ioc.testdata.UserService
 import com.miskevich.ioc.testdata.providers.BeanDefinitionDataProvider
 import org.testng.annotations.Test
 
-class ClassPathApplicationContextTest extends GroovyTestCase {
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+
+class ClassPathApplicationContextITest {
 
     @Test
     void testGetBeanById() {
@@ -41,13 +46,13 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
         assertTrue(userService instanceof UserService)
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByClassNotExists() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
         context.getBean(String.class)
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByClassNotExistsPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/part-of-context.xml",
                 "src/test/resources/email-context.xml")
@@ -69,13 +74,13 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
         assertTrue(paymentService instanceof PaymentService)
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String with id: paymentWithMaxAmountService", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String with id: foo", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdAndClassNotExists() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
-        context.getBean("paymentWithMaxAmountService", String.class)
+        context.getBean("foo", String.class)
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String with id: paymentWithMaxAmountService", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String with id: paymentWithMaxAmountService", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdAndClassNotExistsPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/part-of-context.xml",
                 "src/test/resources/email-context.xml")
@@ -86,7 +91,7 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
     void testGetBeanNames(List<String> expectedBeanNames) {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
         def actualBeanNames = context.getBeanNames()
-        assertEquals(expectedBeanNames, actualBeanNames)
+        assertEquals(actualBeanNames, expectedBeanNames)
     }
 
     @Test(dataProvider = "provideBeanNames", dataProviderClass = BeanDefinitionDataProvider.class)
@@ -94,16 +99,16 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/email-context.xml",
                 "src/test/resources/part-of-context.xml")
         def actualBeanNames = context.getBeanNames()
-        assertEquals(expectedBeanNames, actualBeanNames)
+        assertEquals(actualBeanNames, expectedBeanNames)
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with id: userService", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with id: userService", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdBeanNotRegistered() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/email-context.xml")
         context.getBean("userService")
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with id: userServiceFoo", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with id: userServiceFoo", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdBeanNotRegisteredPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/part-of-context.xml",
                 "src/test/resources/email-context.xml")
@@ -123,13 +128,13 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
         context.getBean("userService")
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with ref: emailServiceNotExists", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered: emailServiceNotExists", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdNoRefRegistered() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/incorrect-ref-context.xml")
         context.getBean("userServiceIncorrectRef")
     }
 
-    @Test(expectedExceptionsMessageRegExp = "No such bean was registered with ref: emailServiceNotExists", expectedExceptions = BeanInstantiationException.class)
+    @Test(expectedExceptionsMessageRegExp = "No such bean was registered: emailServiceNotExists", expectedExceptions = BeanNotFoundException.class)
     void testGetBeanByIdNoRefRegisteredPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/incorrect-ref-context.xml",
                 "src/test/resources/email-context.xml")

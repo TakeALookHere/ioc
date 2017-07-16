@@ -1,7 +1,10 @@
 package com.miskevich.ioc.testdata.providers
 
-import com.miskevich.ioc.data.BeanDefinition
-import com.miskevich.ioc.data.BeanProperty
+import com.miskevich.ioc.model.Bean
+import com.miskevich.ioc.model.BeanDefinition
+import com.miskevich.ioc.model.BeanProperty
+import com.miskevich.ioc.testdata.EmailService
+import com.miskevich.ioc.testdata.PaymentService
 import org.testng.annotations.DataProvider
 
 
@@ -75,6 +78,29 @@ class BeanDefinitionDataProvider {
 
         def array = new Object[1][]
         array[0] = [beanDefinitions] as Object[]
+        return array
+    }
+
+    @DataProvider(name = "provideBeanDefinitionsInjectionCheck")
+    static Object[][] provideBeanDefinitionsInjectionCheck() {
+        def beanDefinitions = new ArrayList<>()
+
+        def beanProperties1 = [new BeanProperty(name: 'maxAmount', value: '5000'), new BeanProperty(name: 'emailService', ref: 'emailService')]
+        BeanDefinition beanDefinition1 = new BeanDefinition(
+                id: 'paymentWithMaxAmountService', className: 'com.miskevich.ioc.testdata.PaymentService',
+                beanProperties: beanProperties1)
+        beanDefinitions.add(beanDefinition1)
+
+        def beanProperties2 = [new BeanProperty(name: 'protocol', value: 'UDP'), new BeanProperty(name: 'port', value: '8888')]
+        BeanDefinition beanDefinition2 = new BeanDefinition(
+                id: 'emailService', className: 'com.miskevich.ioc.testdata.EmailService',
+                beanProperties: beanProperties2)
+        beanDefinitions.add(beanDefinition2)
+
+        def beans = [new Bean(id: 'emailService', value: new EmailService()), new Bean(id: 'paymentWithMaxAmountService', value: new PaymentService())]
+
+        def array = new Object[1][]
+        array[0] = [beanDefinitions, beans] as Object[]
         return array
     }
 

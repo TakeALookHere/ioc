@@ -1,11 +1,11 @@
-package com.miskevich.ioc.util.reader
+package com.miskevich.ioc.reader
 
 import com.miskevich.ioc.testdata.providers.BeanDefinitionDataProvider
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
 
-class XMLBeanReaderTest extends GroovyTestCase {
+class XMLBeanReaderTest {
 
     @Test(dataProvider = "provideBeanDefinitions", dataProviderClass = BeanDefinitionDataProvider.class)
     void testGetBeanDefinitionsByPath(expectedBeanDefinitions) {

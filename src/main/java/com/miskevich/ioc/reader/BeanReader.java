@@ -1,6 +1,6 @@
-package com.miskevich.ioc.util.reader;
+package com.miskevich.ioc.reader;
 
-import com.miskevich.ioc.data.BeanDefinition;
+import com.miskevich.ioc.model.BeanDefinition;
 
 import java.util.List;
 

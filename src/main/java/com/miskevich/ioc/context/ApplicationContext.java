@@ -1,4 +1,4 @@
-package com.miskevich.ioc.util;
+package com.miskevich.ioc.context;
 
 import java.util.List;
 

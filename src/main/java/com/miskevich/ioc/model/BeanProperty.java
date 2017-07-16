@@ -1,4 +1,4 @@
-package com.miskevich.ioc.data;
+package com.miskevich.ioc.model;
 
 public class BeanProperty {
     private String name;
@@ -30,15 +30,6 @@ public class BeanProperty {
     }
 
     @Override
-    public String toString() {
-        return "BeanProperty{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
-                ", ref='" + ref + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -56,5 +47,14 @@ public class BeanProperty {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         result = 31 * result + (ref != null ? ref.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BeanProperty{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", ref='" + ref + '\'' +
+                '}';
     }
 }

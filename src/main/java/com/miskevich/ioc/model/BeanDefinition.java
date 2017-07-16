@@ -1,4 +1,4 @@
-package com.miskevich.ioc.data;
+package com.miskevich.ioc.model;
 
 import java.util.List;
 
