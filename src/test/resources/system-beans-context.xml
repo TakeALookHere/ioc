@@ -4,12 +4,8 @@
         <property name="port" value="3000"/>
     </bean>
 
-    <bean id="userService" class="com.miskevich.ioc.testdata.CurrentUserService">
+    <bean id="userService" class="com.miskevich.ioc.testdata.CurrentUserService" init-method="userInit">
         <property name="emailService" ref="emailService"/>
-    </bean>
-
-    <bean id="userServiceIncorrectRef" class="com.miskevich.ioc.testdata.CurrentUserService">
-        <property name="emailService" ref="emailServiceNotExists"/>
     </bean>
 
     <bean id="paymentWithMaxAmountService" class="com.miskevich.ioc.testdata.PaymentService">
@@ -17,7 +13,13 @@
         <property name="emailService" ref="emailService"/>
     </bean>
 
-    <bean id="paymentService" class="com.miskevich.ioc.testdata.PaymentService">
+    <bean id="paymentService" class="com.miskevich.ioc.testdata.PaymentService" init-method="paymentInit">
         <property name="emailService" ref="emailService"/>
     </bean>
+
+    <bean class="com.miskevich.ioc.testdata.config.UserBeanFactoryPostProcessor"/>
+    <bean class="com.miskevich.ioc.testdata.config.EmailBeanFactoryPostProcessor"/>
+
+    <bean class="com.miskevich.ioc.testdata.config.FirstBeanPostProcessor"/>
+    <bean class="com.miskevich.ioc.testdata.config.SecondBeanPostProcessor"/>
 </beans>

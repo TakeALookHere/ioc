@@ -14,15 +14,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class XMLBeanReader extends DefaultHandler implements BeanReader {
 
     private List<BeanDefinition> beanDefinitions;
     private BeanDefinition currentBeanDefinition;
+    private Map<String, Integer> classNameToCount;
 
     public XMLBeanReader() {
         this.beanDefinitions = new ArrayList<>();
+        this.classNameToCount = new HashMap<>();
     }
 
     public List<BeanDefinition> getBeanDefinitions(String path) {
@@ -37,11 +41,20 @@ public class XMLBeanReader extends DefaultHandler implements BeanReader {
         return beanDefinitions;
     }
 
+    public Map<String, Integer> getClassNameToCount() {
+        return classNameToCount;
+    }
+
     public void startElement(String uri, String localName, String qualifiedName, Attributes attributes) throws SAXException {
         if (qualifiedName.equalsIgnoreCase("bean")) {
             BeanDefinition beanDefinition = new BeanDefinition();
             beanDefinition.setId(attributes.getValue("id"));
-            beanDefinition.setClassName(attributes.getValue("class"));
+            String className = attributes.getValue("class");
+            beanDefinition.setClassName(className);
+
+            populateClassNameToCountMap(className);
+
+            beanDefinition.setInitMethod(attributes.getValue("init-method"));
             beanDefinitions.add(beanDefinition);
             currentBeanDefinition = beanDefinition;
         } else if (qualifiedName.equalsIgnoreCase("property")) {
@@ -62,6 +75,15 @@ public class XMLBeanReader extends DefaultHandler implements BeanReader {
                 currentBeanDefinition.setBeanProperties(new ArrayList<>());
             }
             currentBeanDefinition.getBeanProperties().add(beanProperty);
+        }
+    }
+
+    private void populateClassNameToCountMap(String className) {
+        if (!classNameToCount.containsKey(className)) {
+            classNameToCount.put(className, 1);
+        } else {
+            int counter = classNameToCount.get(className);
+            classNameToCount.put(className, counter + 1);
         }
     }
 

@@ -2,48 +2,66 @@ package com.miskevich.ioc.context
 
 import com.miskevich.ioc.exception.BeanInstantiationException
 import com.miskevich.ioc.exception.BeanNotFoundException
+import com.miskevich.ioc.testdata.CurrentUserService
+import com.miskevich.ioc.testdata.EmailService
 import com.miskevich.ioc.testdata.PaymentService
 import com.miskevich.ioc.testdata.UserService
+import com.miskevich.ioc.testdata.config.EmailBeanFactoryPostProcessor
+import com.miskevich.ioc.testdata.config.UserBeanFactoryPostProcessor
 import com.miskevich.ioc.testdata.providers.BeanDefinitionDataProvider
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 class ClassPathApplicationContextITest {
 
     @Test
     void testGetBeanById() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
-        UserService userService = (UserService) context.getBean("userService")
+        CurrentUserService userService = (CurrentUserService) context.getBean("userService")
         userService.sendEmailWithUsersCount()
-        assertTrue(userService instanceof UserService)
+        assertTrue(userService instanceof CurrentUserService)
     }
 
     @Test
     void testGetBeanByIdPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/part-of-context.xml",
                 "src/test/resources/email-context.xml")
-        UserService userService = (UserService) context.getBean("userService")
+        CurrentUserService userService = (CurrentUserService) context.getBean("userService")
         userService.sendEmailWithUsersCount()
-        assertTrue(userService instanceof UserService)
+        assertTrue(userService instanceof CurrentUserService)
     }
 
     @Test
     void testGetBeanByClass() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
+        def userService = context.getBean(CurrentUserService.class)
+        userService.sendEmailWithUsersCount()
+        assertTrue(userService instanceof CurrentUserService)
+    }
+
+    @Test(expectedExceptionsMessageRegExp = "There's more that 1 bean registered for the class com.miskevich.ioc.testdata.PaymentService",
+            expectedExceptions = BeanInstantiationException.class)
+    void testGetBeanByClassMultipleBeansRegistered() {
+        ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
+        context.getBean(PaymentService.class)
+    }
+
+    @Test
+    void testGetBeanByClassViaInterface() {
+        ApplicationContext context = new ClassPathApplicationContext("src/test/resources/context.xml")
         def userService = context.getBean(UserService.class)
         userService.sendEmailWithUsersCount()
-        assertTrue(userService instanceof UserService)
+        assertTrue(userService instanceof CurrentUserService)
     }
 
     @Test
     void testGetBeanByClassPaths() {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/part-of-context.xml",
                 "src/test/resources/email-context.xml")
-        def userService = context.getBean(UserService.class)
+        def userService = context.getBean(CurrentUserService.class)
         userService.sendEmailWithUsersCount()
-        assertTrue(userService instanceof UserService)
+        assertTrue(userService instanceof CurrentUserService)
     }
 
     @Test(expectedExceptionsMessageRegExp = "No such bean was registered for class: class java.lang.String", expectedExceptions = BeanNotFoundException.class)
@@ -139,5 +157,50 @@ class ClassPathApplicationContextITest {
         ApplicationContext context = new ClassPathApplicationContext("src/test/resources/incorrect-ref-context.xml",
                 "src/test/resources/email-context.xml")
         context.getBean("userServiceIncorrectRef")
+    }
+
+    @Test
+    void testPostProcessBeanFactory() {
+        new ClassPathApplicationContext("src/test/resources/system-beans-context.xml")
+        assertEquals(UserBeanFactoryPostProcessor.getCheck(), 25)
+        assertEquals(EmailBeanFactoryPostProcessor.getCheck(), "Good day!")
+    }
+
+    @Test
+    void testPostProcessInitialization() {
+        def context = new ClassPathApplicationContext("src/test/resources/system-beans-context.xml")
+        def userServiceBean = context.getBean(CurrentUserService.class)
+        def emailServiceBean = context.getBean(EmailService.class)
+        def paymentServiceBean = context.getBean("paymentService", PaymentService.class)
+        def paymentWithMaxAmountServiceBean = context.getBean("paymentWithMaxAmountService", PaymentService.class)
+
+        assertTrue(userServiceBean.firstCheck)
+        assertFalse(emailServiceBean.firstCheck)
+        assertFalse(paymentServiceBean.firstCheck)
+        assertFalse(paymentWithMaxAmountServiceBean.firstCheck)
+
+        assertEquals(userServiceBean.secondCheck, 25)
+        assertEquals(emailServiceBean.secondCheck, 25)
+        assertEquals(paymentServiceBean.secondCheck, 25)
+        assertEquals(paymentWithMaxAmountServiceBean.secondCheck, 25)
+
+        assertEquals(userServiceBean.thirdCheck, "Done for user!")
+        assertEquals(emailServiceBean.thirdCheck, "Done for email!")
+        assertEquals(paymentServiceBean.thirdCheck, "AfterInitialization for payment...")
+        assertEquals(paymentWithMaxAmountServiceBean.thirdCheck, "AfterInitialization for payment...")
+    }
+
+    @Test
+    void testInitMethod() {
+        def context = new ClassPathApplicationContext("src/test/resources/system-beans-context.xml")
+        def userServiceBean = context.getBean(CurrentUserService.class)
+        def emailServiceBean = context.getBean(EmailService.class)
+        def paymentServiceBean = context.getBean("paymentService", PaymentService.class)
+        def paymentWithMaxAmountServiceBean = context.getBean("paymentWithMaxAmountService", PaymentService.class)
+
+        assertEquals(userServiceBean.fourthCheck, "User init-method check")
+        assertNull(emailServiceBean.fourthCheck)
+        assertEquals(paymentServiceBean.fourthCheck, "Payment init-method check")
+        assertNull(paymentWithMaxAmountServiceBean.fourthCheck)
     }
 }

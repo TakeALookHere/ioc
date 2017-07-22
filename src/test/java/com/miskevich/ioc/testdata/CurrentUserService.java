@@ -1,8 +1,7 @@
 package com.miskevich.ioc.testdata;
 
-public class PaymentService {
+public class CurrentUserService implements UserService {
     private EmailService emailService;
-    private int maxAmount;
     private boolean firstCheck;
     private int secondCheck;
     private String thirdCheck;
@@ -12,25 +11,21 @@ public class PaymentService {
         this.emailService = emailService;
     }
 
-    public int getMaxAmount() {
-        return maxAmount;
+    public void sendEmailWithUsersCount() {
+        int numberOfUsersInSystem = getUsersCount();
+        emailService.sendEmail("aaa@bbb.com", "there are " + numberOfUsersInSystem + " in the system");
     }
 
-    public void setMaxAmount(int maxAmount) {
-        this.maxAmount = maxAmount;
+    public void userInit(){
+        setFourthCheck("User init-method check");
+    }
+
+    private int getUsersCount() {
+        return (int) (Math.random() * 1_000);
     }
 
     public EmailService getEmailService() {
         return emailService;
-    }
-
-    public void pay(String from, String to, double amount) {
-        emailService.sendEmail("from", "payment successful");
-        emailService.sendEmail("to", "payment successful");
-    }
-
-    public void paymentInit(){
-        setFourthCheck("Payment init-method check");
     }
 
     public boolean isFirstCheck() {

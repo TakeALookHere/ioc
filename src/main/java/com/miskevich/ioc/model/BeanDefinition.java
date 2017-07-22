@@ -5,6 +5,7 @@ import java.util.List;
 public class BeanDefinition {
     private String id;
     private String className;
+    private String initMethod;
     private List<BeanProperty> beanProperties;
 
     public String getId() {
@@ -21,6 +22,14 @@ public class BeanDefinition {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getInitMethod() {
+        return initMethod;
+    }
+
+    public void setInitMethod(String initMethod) {
+        this.initMethod = initMethod;
     }
 
     public List<BeanProperty> getBeanProperties() {
@@ -40,6 +49,7 @@ public class BeanDefinition {
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (className != null ? !className.equals(that.className) : that.className != null) return false;
+        if (initMethod != null ? !initMethod.equals(that.initMethod) : that.initMethod != null) return false;
         return beanProperties != null ? beanProperties.equals(that.beanProperties) : that.beanProperties == null;
     }
 
@@ -47,6 +57,7 @@ public class BeanDefinition {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (className != null ? className.hashCode() : 0);
+        result = 31 * result + (initMethod != null ? initMethod.hashCode() : 0);
         result = 31 * result + (beanProperties != null ? beanProperties.hashCode() : 0);
         return result;
     }
@@ -56,6 +67,7 @@ public class BeanDefinition {
         return "BeanDefinition{" +
                 "id='" + id + '\'' +
                 ", className='" + className + '\'' +
+                ", initMethod='" + initMethod + '\'' +
                 ", beanProperties=" + beanProperties +
                 '}';
     }

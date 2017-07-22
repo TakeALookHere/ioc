@@ -1,5 +1,5 @@
 <beans>
-    <bean id="userService" class="com.miskevich.ioc.testdata.UserService">
+    <bean id="userService" class="com.miskevich.ioc.testdata.CurrentUserService">
         <property name="emailService" ref="emailService"/>
     </bean>
 

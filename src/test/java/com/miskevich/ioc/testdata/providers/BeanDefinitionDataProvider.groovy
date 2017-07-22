@@ -21,7 +21,7 @@ class BeanDefinitionDataProvider {
 
         def beanProperties2 = [new BeanProperty(name: 'emailService', ref: 'emailService')]
         BeanDefinition beanDefinition2 = new BeanDefinition(
-                id: 'userService', className: 'com.miskevich.ioc.testdata.UserService',
+                id: 'userService', className: 'com.miskevich.ioc.testdata.CurrentUserService',
                 beanProperties: beanProperties2)
         beanDefinitions.add(beanDefinition2)
 
@@ -54,7 +54,7 @@ class BeanDefinitionDataProvider {
 
         def beanProperties2 = [new BeanProperty(name: 'emailService', ref: 'emailService')]
         BeanDefinition beanDefinition2 = new BeanDefinition(
-                id: 'userService', className: 'com.miskevich.ioc.testdata.UserService',
+                id: 'userService', className: 'com.miskevich.ioc.testdata.CurrentUserService',
                 beanProperties: beanProperties2)
         beanDefinitions.add(beanDefinition2)
 

@@ -1,11 +1,10 @@
 <beans>
-    <!--<import resource="resources/email-context.xml"/>-->
     <bean id="emailService" class="com.miskevich.ioc.testdata.EmailService">
         <property name="protocol" value="POP3"/>
         <property name="port" value="3000"/>
     </bean>
 
-    <bean id="userService" class="com.miskevich.ioc.testdata.UserService">
+    <bean id="userService" class="com.miskevich.ioc.testdata.CurrentUserService">
         <property name="emailService" ref="emailService"/>
     </bean>
 
