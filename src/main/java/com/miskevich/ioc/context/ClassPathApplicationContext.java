@@ -23,8 +23,8 @@ public class ClassPathApplicationContext implements ApplicationContext {
     private List<Bean> beans;
     private List<BeanDefinition> beanDefinitions;
     private Map<String, Integer> classNameToCount;
-    private List<Class<?>> beanFactoryPostProcessors;
-    private List<Class<?>> beanPostProcessors;
+    private List<BeanFactoryPostProcessor> beanFactoryPostProcessors;
+    private List<BeanPostProcessor> beanPostProcessors;
 
     public ClassPathApplicationContext(String path) {
         this(new String[]{path});
@@ -39,27 +39,26 @@ public class ClassPathApplicationContext implements ApplicationContext {
         beanDefinitions = reader.getBeanDefinitions(paths);
         classNameToCount = reader.getClassNameToCount();
 
-        boolean isBeanFactoryPostProcessor = isSystemBeanPresent(beanDefinitions, BeanFactoryPostProcessor.class);
-        boolean isBeanPostProcessor = isSystemBeanPresent(beanDefinitions, BeanPostProcessor.class);
+        boolean isBeanFactoryPostProcessorPresent = isSystemBeanPresent(BeanFactoryPostProcessor.class);
+        boolean isBeanPostProcessorPresent = isSystemBeanPresent(BeanPostProcessor.class);
 
-        if (isBeanFactoryPostProcessor) {
+        if (isBeanFactoryPostProcessorPresent) {
             postProcessBeanFactory();
         }
 
         initializeBeanObjects();
 
-        Injector injector = new Injector();
-        injector.setBeans(beans);
-        injector.injectBeanProperties(beanDefinitions);
+        Injector injector = new Injector(beanDefinitions, beans);
+        injector.injectBeanProperties();
 
-        if (isBeanPostProcessor) {
-            postProcess("postProcessBeforeInitialization");
+        if (isBeanPostProcessorPresent) {
+            postProcessBefore();
         }
 
         initMethod();
 
-        if (isBeanPostProcessor) {
-            postProcess("postProcessAfterInitialization");
+        if (isBeanPostProcessorPresent) {
+            postProcessAfter();
         }
     }
 
@@ -126,20 +125,22 @@ public class ClassPathApplicationContext implements ApplicationContext {
         beans.add(bean);
     }
 
-    private boolean isSystemBeanPresent(List<BeanDefinition> beanDefinitions, Class<?> tClass) {
+    private boolean isSystemBeanPresent(Class<?> systemClassForSearch) {
         for (Iterator<BeanDefinition> iterator = beanDefinitions.iterator(); iterator.hasNext(); ) {
             try {
                 BeanDefinition beanDefinition = iterator.next();
                 Class clazz = Class.forName(beanDefinition.getClassName());
-                if (tClass.isAssignableFrom(clazz)) {
-                    if (tClass == BeanFactoryPostProcessor.class) {
-                        beanFactoryPostProcessors.add(clazz);
+                if (systemClassForSearch.isAssignableFrom(clazz)) {
+                    if (systemClassForSearch == BeanFactoryPostProcessor.class) {
+                        BeanFactoryPostProcessor instance = (BeanFactoryPostProcessor) clazz.newInstance();
+                        beanFactoryPostProcessors.add(instance);
                     } else {
-                        beanPostProcessors.add(clazz);
+                        BeanPostProcessor instance = (BeanPostProcessor) clazz.newInstance();
+                        beanPostProcessors.add(instance);
                     }
                     iterator.remove();
                 }
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -147,27 +148,23 @@ public class ClassPathApplicationContext implements ApplicationContext {
     }
 
     private void postProcessBeanFactory() {
-        for (Class<?> beanFactoryPostProcessor : beanFactoryPostProcessors) {
-            try {
-                Object instance = beanFactoryPostProcessor.newInstance();
-                Method postProcessBeanFactory = beanFactoryPostProcessor.getMethod("postProcessBeanFactory", List.class);
-                postProcessBeanFactory.invoke(instance, beanDefinitions);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+        for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessors) {
+            beanFactoryPostProcessor.postProcessBeanFactory(beanDefinitions);
+        }
+    }
+
+    private void postProcessBefore() {
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            for (Bean bean : beans) {
+                beanPostProcessor.postProcessBeforeInitialization(bean.getValue(), bean.getId());
             }
         }
     }
 
-    private void postProcess(String methodName) {
-        for (Class<?> beanPostProcessor : beanPostProcessors) {
-            try {
-                Object instance = beanPostProcessor.newInstance();
-                Method postProcessMethod = beanPostProcessor.getMethod(methodName, Object.class, String.class);
-                for (Bean bean : beans) {
-                    postProcessMethod.invoke(instance, bean.getValue(), bean.getId());
-                }
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+    private void postProcessAfter() {
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            for (Bean bean : beans) {
+                beanPostProcessor.postProcessAfterInitialization(bean.getValue(), bean.getId());
             }
         }
     }

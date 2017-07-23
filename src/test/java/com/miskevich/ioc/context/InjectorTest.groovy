@@ -17,12 +17,15 @@ import static org.testng.Assert.assertTrue
 
 class InjectorTest {
 
+    private List<Bean> beans
+    private List<BeanDefinition> beanDefinitions
+
     @Test(dataProvider = "provideBeanAndPropertyInt", dataProviderClass = BeanAndPropertyProvider.class)
     void testInjectBeanPropertiesIntoSetterInt(Bean bean, BeanProperty beanProperty) {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setIntType', int.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getIntType(), Integer.parseInt(beanProperty.getValue()))
@@ -33,7 +36,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setIntegerType', Integer.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getIntegerType(), Integer.parseInt(beanProperty.getValue()))
@@ -44,7 +47,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setDoubleType', double.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getDoubleType(), Double.parseDouble(beanProperty.getValue()))
@@ -55,7 +58,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setDoubleBigType', Double.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getDoubleBigType(), Double.parseDouble(beanProperty.getValue()))
@@ -66,7 +69,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setLongType', long.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getLongType(), Long.parseLong(beanProperty.getValue()))
@@ -77,7 +80,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setLongBigType', Long.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getLongBigType(), Long.parseLong(beanProperty.getValue()))
@@ -88,7 +91,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setFloatType', float.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getFloatType(), Float.parseFloat(beanProperty.getValue()))
@@ -99,7 +102,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setFloatBigType', Float.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getFloatBigType(), Float.parseFloat(beanProperty.getValue()))
@@ -110,7 +113,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setShortType', short.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getShortType(), Short.parseShort(beanProperty.getValue()))
@@ -121,7 +124,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setShortBigType', Short.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getShortBigType(), Short.parseShort(beanProperty.getValue()))
@@ -132,7 +135,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setBooleanType', boolean.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getBooleanType(), Boolean.parseBoolean(beanProperty.getValue()))
@@ -143,7 +146,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setBooleanBigType', Boolean.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getBooleanBigType(), Boolean.parseBoolean(beanProperty.getValue()))
@@ -154,7 +157,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setByteType', byte.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getByteType(), Byte.parseByte(beanProperty.getValue()))
@@ -165,7 +168,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setByteBigType', Byte.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getByteBigType(), Byte.parseByte(beanProperty.getValue()))
@@ -176,7 +179,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setCharType', char.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getCharType(), beanProperty.getValue().charAt(0))
@@ -187,7 +190,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setCharacterType', Character.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getCharacterType(), beanProperty.getValue().charAt(0))
@@ -198,7 +201,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setStringType', String.class)
 
-        Injector injector = new Injector()
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getStringType(), beanProperty.getValue())
@@ -209,8 +212,7 @@ class InjectorTest {
         Class clazz = Class.forName("com.miskevich.ioc.testdata.AllDataTypesHolderVO")
         Method method = clazz.getDeclaredMethod('setEmailService', EmailService.class)
 
-        Injector injector = new Injector()
-        injector.setBeans(beans)
+        Injector injector = new Injector(beanDefinitions, beans)
         injector.injectPropertyIntoSetter(bean, beanProperty, method)
         AllDataTypesHolderVO value = (AllDataTypesHolderVO) bean.getValue()
         assertEquals(value.getEmailService(), beans.get(0).getValue())
@@ -218,12 +220,11 @@ class InjectorTest {
 
     @Test(dataProvider = "provideBeanDefinitionsInjectionCheck", dataProviderClass = BeanDefinitionDataProvider.class)
     void testInjectBeanProperties(List<BeanDefinition> beanDefinitions, List<Bean> beans) {
-        Injector injector = new Injector()
-        injector.setBeans(beans)
-        injector.injectBeanProperties(beanDefinitions)
+        Injector injector = new Injector(beanDefinitions, beans)
+        injector.injectBeanProperties()
 
         for (Bean bean : beans) {
-            if (bean.getId().equals('paymentWithMaxAmountService')) {
+            if ('paymentWithMaxAmountService'.equals(bean.getId())) {
                 def paymentService = (PaymentService) bean.getValue()
                 assertEquals(paymentService.getMaxAmount(), 5000)
                 assertTrue(paymentService.getEmailService() instanceof EmailService)

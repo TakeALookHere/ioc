@@ -13,8 +13,14 @@ import java.util.List;
 public class Injector {
 
     private List<Bean> beans;
+    private List<BeanDefinition> beanDefinitions;
 
-    void injectBeanProperties(List<BeanDefinition> beanDefinitions) {
+    public Injector(List<BeanDefinition> beanDefinitions, List<Bean> beans) {
+        this.beanDefinitions = beanDefinitions;
+        this.beans = beans;
+    }
+
+    void injectBeanProperties() {
         for (BeanDefinition beanDefinition : beanDefinitions) {
             try {
                 Class clazz = Class.forName(beanDefinition.getClassName());
@@ -93,9 +99,5 @@ public class Injector {
             }
         }
         throw new BeanNotFoundException("No such bean was registered: " + id);
-    }
-
-    void setBeans(List<Bean> beans) {
-        this.beans = beans;
     }
 }
